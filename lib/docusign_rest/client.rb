@@ -270,6 +270,12 @@ module DocusignRest
             includeDocuments:        envelope_event[:include_documents] || false,
             envelopeEventStatusCode: envelope_event[:envelope_event_status_code]
           }
+        end,
+        :recipientEvents => Array(event_notification[:recipient_events]).map do |recipient_event|
+          {
+            includeDocuments:        recipient_event[:include_documents] || false,
+            recipientEventStatusCode: recipient_event[:recipient_event_status_code]
+          }
         end
       }
     end
@@ -633,10 +639,13 @@ module DocusignRest
         emailBlurb:   "#{options[:email][:body] if options[:email]}",
         emailSubject: "#{options[:email][:subject] if options[:email]}",
         documents: get_documents(ios),
+        eventNotification:  get_event_notification(options[:event_notification]),
         recipients: {
           signers: get_signers(options[:signers])
         },
         status: "#{options[:status]}",
+        enableWetSign:      options[:enable_wet_sign] || false,
+        recipientsLock:     options[:recipients_lock] || false,
         customFields: options[:custom_fields]
       }.to_json
 
