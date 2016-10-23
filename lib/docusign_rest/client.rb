@@ -166,7 +166,7 @@ module DocusignRest
     #   userId    - # TODO determine what this is used for, if anything
     #   userName  - Full name provided when signing up for DocuSign
     def get_login_information(options={})
-      uri = build_uri('/login_information')
+      uri = build_uri("/login_information?api_password=#{options[:api_password]}&login_settings=#{options[:login_settings]}")
       request = Net::HTTP::Get.new(uri.request_uri, headers(options[:headers]))
       http = initialize_net_http_ssl(uri)
       http.request(request)
