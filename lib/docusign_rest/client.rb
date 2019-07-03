@@ -265,6 +265,7 @@ module DocusignRest
         loggingEnabled:                 event_notification[:logging],
         requireAcknowledgment:          event_notification[:require_acknowledgement] || false,
         includeCertificateOfCompletion: event_notification[:include_certificate_of_completion] || false,
+        includeDocuments:               event_notification[:include_documents] || false,
         :envelopeEvents => Array(event_notification[:envelope_events]).map do |envelope_event|
           {
             includeDocuments:        envelope_event[:include_documents] || false,
