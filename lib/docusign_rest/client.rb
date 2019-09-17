@@ -676,7 +676,9 @@ module DocusignRest
         emailSubject: "#{options[:email][:subject] if options[:email]}",
         documents: get_documents(ios),
         eventNotification:  get_event_notification(options[:event_notification]),
-        recipients: {},
+        recipients: {
+          signers: get_signers(options[:signers])
+        },
         status: "#{options[:status]}",
         enableWetSign:      options[:enable_wet_sign] || false,
         recipientsLock:     options[:recipients_lock] || false,
