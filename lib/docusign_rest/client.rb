@@ -671,6 +671,14 @@ module DocusignRest
       ios = create_file_ios(options[:files])
       file_params = create_file_params(ios)
 
+      debugger
+
+      options[:content_type] ||= 'application/json'
+
+      headers = {
+        'Content-Type' => options[:content_type],
+      }
+
       post_body = {
         emailBlurb:   "#{options[:email][:body] if options[:email]}",
         emailSubject: "#{options[:email][:subject] if options[:email]}",
@@ -688,11 +696,10 @@ module DocusignRest
       uri = build_uri("/accounts/#{@acct_id}/envelopes/#{options[:envelope_id]}/documents")
 
       http = initialize_net_http_ssl(uri)
-
-      request = initialize_net_http_multipart_post_request(
-                  uri, post_body, file_params, headers(options[:headers])
-                )
-
+      
+      request = Net::HTTP::Put.new(uri.request_uri, headers(headers))
+      request.body = post_body.merge(file_params),
+      
       response = http.request(request)
       JSON.parse(response.body)
     end
