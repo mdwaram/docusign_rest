@@ -671,8 +671,6 @@ module DocusignRest
       ios = create_file_ios(options[:files])
       file_params = create_file_params(ios)
 
-      debugger
-
       options[:content_type] ||= 'application/json'
 
       headers = {
