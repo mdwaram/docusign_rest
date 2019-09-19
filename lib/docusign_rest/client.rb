@@ -689,7 +689,7 @@ module DocusignRest
         enableWetSign:      options[:enable_wet_sign] || false,
         recipientsLock:     options[:recipients_lock] || false,
         customFields: options[:custom_fields]
-      }.to_json
+      }.merge(file_params).to_json
 
       uri = build_uri("/accounts/#{@acct_id}/envelopes/#{options[:envelope_id]}/documents")
 
