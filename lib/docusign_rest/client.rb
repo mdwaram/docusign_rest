@@ -698,7 +698,8 @@ module DocusignRest
       http = initialize_net_http_ssl(uri)
       
       request = Net::HTTP::Put.new(uri.request_uri, headers(headers))
-      request.body = post_body.merge(file_params),
+      request.body = post_body
+      request.merge(file_params),
       
       response = http.request(request)
       JSON.parse(response.body)
