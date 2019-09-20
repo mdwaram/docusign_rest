@@ -603,6 +603,16 @@ module DocusignRest
       request
     end
 
+    def initialize_net_http_multipart_put_request(uri, post_body, file_params, headers)
+      request = Net::HTTP::Put::Multipart.new(
+        uri.request_uri,
+        { post_body: post_body }.merge(file_params),
+        headers
+      )
+      debugger
+      request.body = request.body_stream.read
+      request
+    end
 
     # Public: creates an envelope from a document directly without a template
     #
@@ -660,6 +670,39 @@ module DocusignRest
                   uri, post_body, file_params, headers(options[:headers])
                 )
 
+      response = http.request(request)
+      JSON.parse(response.body)
+    end
+
+
+    # custom method to add both documents and tabs to an envelope in one request
+    # uses DocuSign's updateList endpoint https://developers.docusign.com/esign-rest-api/reference/Envelopes/EnvelopeDocuments/updateList
+    def add_to_envelope(options={})
+      ios = create_file_ios(options[:files])
+      file_params = create_file_params(ios)
+
+      post_body = {
+        emailBlurb:   "#{options[:email][:body] if options[:email]}",
+        emailSubject: "#{options[:email][:subject] if options[:email]}",
+        documents: get_documents(ios),
+        eventNotification:  get_event_notification(options[:event_notification]),
+        recipients: {
+          signers: get_signers(options[:signers])
+        },
+        status: "#{options[:status]}",
+        enableWetSign:      options[:enable_wet_sign] || false,
+        recipientsLock:     options[:recipients_lock] || false,
+        customFields: options[:custom_fields]
+      }.to_json
+      
+      uri = build_uri("/accounts/#{@acct_id}/envelopes/#{options[:envelope_id]}/documents")
+
+      http = initialize_net_http_ssl(uri)
+
+      request = initialize_net_http_multipart_put_request(
+        uri, post_body, file_params, headers(options[:headers])
+      )
+      
       response = http.request(request)
       JSON.parse(response.body)
     end
