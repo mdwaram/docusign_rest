@@ -1486,7 +1486,7 @@ module DocusignRest
       request.body = post_body
 
       response = http.request(request)
-      generate_log(request, response, uri)
+      generate_log(request, response, uri, true)
       response
     end
 
@@ -1548,15 +1548,17 @@ module DocusignRest
     # For example:
     # envelope = connection.create_envelope_from_document(doc)
     # connection.previous_call_log.each {|line| logger.debug line }
-    def generate_log(request, response, uri)
+    def generate_log(request, response, uri, binary_body = false)
       log = ['--DocuSign REQUEST--']
       log << "#{request.method} #{uri.to_s}"
       request.each_capitalized{ |k,v| log << "#{k}: #{v.gsub(/(?<="Password":")(.+?)(?=")/, '[FILTERED]')}" }
       # Trims out the actual binary file to reduce log size
-      # if request.body
-      #   request_body = request.body.gsub(/(?<=Content-Transfer-Encoding: binary).+?(?=-------------RubyMultipartPost)/m, "\n[BINARY BLOB]\n")
-      #   log << "Body: #{request_body}"
-      # end
+      if binary_body
+        log << "[BINARY BLOB]"
+      elsif request.body
+        request_body = request.body.gsub(/(?<=Content-Transfer-Encoding: binary).+?(?=-------------RubyMultipartPost)/m, "\n[BINARY BLOB]\n")
+        log << "Body: #{request_body}"
+      end
       log << '--DocuSign RESPONSE--'
       log << "HTTP/#{response.http_version} #{response.code} #{response.msg}"
       response.each_capitalized{ |k,v| log << "#{k}: #{v}" }
