@@ -1540,5 +1540,29 @@ module DocusignRest
       response = http.request(request)
       JSON.parse(response.body)
     end
+
+    private
+
+    # Private: Generates a standardized log of the request and response pair
+    # to and from DocuSign for logging and API Certification.
+    # and resulting list is set to the publicly accessible: @previous_call_log
+    # For example:
+    # envelope = connection.create_envelope_from_document(doc)
+    # connection.previous_call_log.each {|line| logger.debug line }
+    def generate_log(request, response, uri)
+      log = ['--DocuSign REQUEST--']
+      log << "#{request.method} #{uri.to_s}"
+      request.each_capitalized{ |k,v| log << "#{k}: #{v.gsub(/(?<="Password":")(.+?)(?=")/, '[FILTERED]')}" }
+      # Trims out the actual binary file to reduce log size
+      if request.body
+        request_body = request.body.gsub(/(?<=Content-Transfer-Encoding: binary).+?(?=-------------RubyMultipartPost)/m, "\n[BINARY BLOB]\n")
+        log << "Body: #{request_body}"
+      end
+      log << '--DocuSign RESPONSE--'
+      log << "HTTP/#{response.http_version} #{response.code} #{response.msg}"
+      response.each_capitalized{ |k,v| log << "#{k}: #{v}" }
+      log << "Body: #{response.body}"
+      @previous_call_log = log
+    end
   end
 end
