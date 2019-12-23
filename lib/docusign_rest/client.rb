@@ -1537,6 +1537,7 @@ module DocusignRest
       request.body = post_body
 
       response = http.request(request)
+      generate_log(request, response, uri)
       JSON.parse(response.body)
     end
 
