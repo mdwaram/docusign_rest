@@ -1554,7 +1554,7 @@ module DocusignRest
       request.each_capitalized{ |k,v| log << "#{k}: #{v.gsub(/(?<="Password":")(.+?)(?=")/, '[FILTERED]')}" }
       # Trims out the actual binary file to reduce log size
       if binary_body
-        log << "[BINARY BLOB]"
+        log << "Body: [BINARY BLOB]"
       elsif request.body
         request_body = request.body.gsub(/(?<=Content-Transfer-Encoding: binary).+?(?=-------------RubyMultipartPost)/m, "\n[BINARY BLOB]\n")
         log << "Body: #{request_body}"
