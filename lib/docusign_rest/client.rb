@@ -1553,10 +1553,10 @@ module DocusignRest
       log << "#{request.method} #{uri.to_s}"
       request.each_capitalized{ |k,v| log << "#{k}: #{v.gsub(/(?<="Password":")(.+?)(?=")/, '[FILTERED]')}" }
       # Trims out the actual binary file to reduce log size
-      if request.body
-        request_body = request.body.gsub(/(?<=Content-Transfer-Encoding: binary).+?(?=-------------RubyMultipartPost)/m, "\n[BINARY BLOB]\n")
-        log << "Body: #{request_body}"
-      end
+      # if request.body
+      #   request_body = request.body.gsub(/(?<=Content-Transfer-Encoding: binary).+?(?=-------------RubyMultipartPost)/m, "\n[BINARY BLOB]\n")
+      #   log << "Body: #{request_body}"
+      # end
       log << '--DocuSign RESPONSE--'
       log << "HTTP/#{response.http_version} #{response.code} #{response.msg}"
       response.each_capitalized{ |k,v| log << "#{k}: #{v}" }
