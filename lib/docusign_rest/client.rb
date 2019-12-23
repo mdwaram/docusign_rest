@@ -1549,12 +1549,14 @@ module DocusignRest
     # For example:
     # envelope = connection.create_envelope_from_document(doc)
     # connection.previous_call_log.each {|line| logger.debug line }
-    def generate_log(request, response, uri)
+    def generate_log(request, response, uri, binary_body = false)
       log = ['--DocuSign REQUEST--']
       log << "#{request.method} #{uri.to_s}"
       request.each_capitalized{ |k,v| log << "#{k}: #{v.gsub(/(?<="Password":")(.+?)(?=")/, '[FILTERED]')}" }
       # Trims out the actual binary file to reduce log size
-      if request.body
+      if binary_body
+        log << "Body: [BINARY BLOB]"
+      elsif request.body
         request_body = request.body.gsub(/(?<=Content-Transfer-Encoding: binary).+?(?=-------------RubyMultipartPost)/m, "\n[BINARY BLOB]\n")
         log << "Body: #{request_body}"
       end
