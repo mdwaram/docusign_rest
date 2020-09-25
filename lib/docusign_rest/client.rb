@@ -322,11 +322,12 @@ module DocusignRest
           accessCode:                            '',
           addAccessCodeToEmail:                  false,
           customFields:                          nil,
-          iDCheckConfigurationName:              nil,
+          iDCheckConfigurationName:              signer[:id_check_configuration_name],
           iDCheckInformationInput:               nil,
           inheritEmailNotificationConfiguration: false,
           note:                                  '',
           phoneAuthentication:                   nil,
+          smsAuthentication:                     nil,
           recipientAttachment:                   nil,
           recipientId:                           signer[:recipient_id] || "#{index + 1}",
           requireIdLookup:                       false,
@@ -334,6 +335,10 @@ module DocusignRest
           routingOrder:                          signer[:routing_order] || (index + 1),
           socialAuthentications:                 nil
         }
+
+        if signer[:sms_authentication]
+          doc_signer[:smsAuthentication] = get_sms_authentication(signer[:sms_authentication])
+        end
 
         if signer[:email_notification]
           doc_signer[:emailNotification] = signer[:email_notification]
@@ -1507,6 +1512,13 @@ module DocusignRest
 
       response = http.request(request)
       JSON.parse(response.body)
+    end
+
+    def get_sms_authentication(input)
+      return {} unless input
+      {
+        senderProvidedNumbers: input[:sender_provided_numbers],
+      }
     end
   end
 end
