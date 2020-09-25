@@ -330,7 +330,7 @@ module DocusignRest
           smsAuthentication:                     nil,
           recipientAttachment:                   nil,
           recipientId:                           signer[:recipient_id] || "#{index + 1}",
-          requireIdLookup:                       false,
+          requireIdLookup:                       signer[:require_id_lookup],
           roleName:                              signer[:role_name],
           routingOrder:                          signer[:routing_order] || (index + 1),
           socialAuthentications:                 nil
