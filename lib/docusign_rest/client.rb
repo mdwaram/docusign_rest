@@ -336,6 +336,10 @@ module DocusignRest
           socialAuthentications:                 nil
         }
 
+        if signer[:phone_authentication]
+          doc_signer[:phoneAuthentication] = get_phone_authentication(signer[:phone_authentication])
+        end
+
         if signer[:sms_authentication]
           doc_signer[:smsAuthentication] = get_sms_authentication(signer[:sms_authentication])
         end
@@ -1514,9 +1518,20 @@ module DocusignRest
       JSON.parse(response.body)
     end
 
+    def get_phone_authentication(input)
+      return {} unless input
+      {
+        recipMayProvideNumber: true,
+        validateRecipProvidedNumber: true,
+        recordVoicePrint: true,
+        senderProvidedNumbers: input[:sender_provided_numbers],
+      }
+    end
+
     def get_sms_authentication(input)
       return {} unless input
       {
+        senderProvidedNumber: input[:sender_provided_number]
         senderProvidedNumbers: input[:sender_provided_numbers],
       }
     end
