@@ -322,7 +322,7 @@ module DocusignRest
           accessCode:                            '',
           addAccessCodeToEmail:                  false,
           customFields:                          nil,
-          idCheckConfigurationName:              signer[:id_check_configuration_name],
+          idCheckConfigurationName:              signer[:id_check_configuration_name] || nil,
           idCheckInformationInput:               nil,
           inheritEmailNotificationConfiguration: false,
           note:                                  '',
@@ -330,7 +330,7 @@ module DocusignRest
           smsAuthentication:                     nil,
           recipientAttachment:                   nil,
           recipientId:                           signer[:recipient_id] || "#{index + 1}",
-          requireIdLookup:                       signer[:require_id_lookup],
+          requireIdLookup:                       signer[:require_id_lookup] || false,
           roleName:                              signer[:role_name],
           routingOrder:                          signer[:routing_order] || (index + 1),
           socialAuthentications:                 nil
@@ -1524,15 +1524,15 @@ module DocusignRest
         recipMayProvideNumber: true,
         validateRecipProvidedNumber: true,
         recordVoicePrint: true,
-        senderProvidedNumbers: input[:sender_provided_numbers],
+        senderProvidedNumbers: input[:sender_provided_numbers]
       }
     end
 
     def get_sms_authentication(input)
       return {} unless input
       {
-        senderProvidedNumber: input[:sender_provided_number]
-        senderProvidedNumbers: input[:sender_provided_numbers],
+        senderProvidedNumber: input[:sender_provided_number],
+        senderProvidedNumbers: input[:sender_provided_numbers]
       }
     end
   end
