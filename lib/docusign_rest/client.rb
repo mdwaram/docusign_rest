@@ -322,18 +322,27 @@ module DocusignRest
           accessCode:                            '',
           addAccessCodeToEmail:                  false,
           customFields:                          nil,
-          iDCheckConfigurationName:              nil,
-          iDCheckInformationInput:               nil,
+          idCheckConfigurationName:              signer[:id_check_configuration_name] || nil,
+          idCheckInformationInput:               nil,
           inheritEmailNotificationConfiguration: false,
           note:                                  '',
           phoneAuthentication:                   nil,
+          smsAuthentication:                     nil,
           recipientAttachment:                   nil,
           recipientId:                           signer[:recipient_id] || "#{index + 1}",
-          requireIdLookup:                       false,
+          requireIdLookup:                       signer[:require_id_lookup] || false,
           roleName:                              signer[:role_name],
           routingOrder:                          signer[:routing_order] || (index + 1),
           socialAuthentications:                 nil
         }
+
+        if signer[:phone_authentication]
+          doc_signer[:phoneAuthentication] = get_phone_authentication(signer[:phone_authentication])
+        end
+
+        if signer[:sms_authentication]
+          doc_signer[:smsAuthentication] = get_sms_authentication(signer[:sms_authentication])
+        end
 
         if signer[:email_notification]
           doc_signer[:emailNotification] = signer[:email_notification]
@@ -1507,6 +1516,24 @@ module DocusignRest
 
       response = http.request(request)
       JSON.parse(response.body)
+    end
+
+    def get_phone_authentication(input)
+      return {} unless input
+      {
+        recipMayProvideNumber: true,
+        validateRecipProvidedNumber: true,
+        recordVoicePrint: true,
+        senderProvidedNumbers: input[:sender_provided_numbers]
+      }
+    end
+
+    def get_sms_authentication(input)
+      return {} unless input
+      {
+        senderProvidedNumber: input[:sender_provided_number],
+        senderProvidedNumbers: input[:sender_provided_numbers]
+      }
     end
   end
 end
